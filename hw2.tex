@@ -157,7 +157,7 @@ The moral is that if $G$ is sparse, then by picking say $r = \sqrt{n}$, we can d
 \part For any $u$ and $v$, the shortest path between them may or may not include a vertex that is in $S$. In the case that the shortest path between them includes a vertex in $S$, then  
 $\min_{s \in S} \{ d(u, s) + d(v, s) \}$ will be equal to $d(u, v)$ for the case when the $s \in S$ that is in the shortest path between $u$ and $v$ is considered. For the case where the shortest path between $u$ and $v$ does not include a vertex in $S$, a path between $u$ and $v$ through any $s \in S$ will be longer than the shortest path between them. So we can conclude that the query will always output a value $\ge d(u, v)$.
 
-\part
+\part Assuming that it takes constant time to decide whether to pick a vertex for the set $S$ or not, it will take $O(n)$ to look at every vertex and decide whether to include it or not. For every vertex $s \in S$, we would need to do a BFS in $O(m+n)$ time and then compute and store $d(s,u)$ for every $u \in V$. This will take a total of $O( n  + r \times (m+n)) = O(r \times (m+n))$ and will need $O(n \times |S|)=O(n \times r)$ storage to store the distance to each of the $n$ vertices from every vertex $s \in S$.
 
 \part
 
