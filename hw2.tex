@@ -132,7 +132,7 @@ You will get partial credit if your algorithm runs in polynomial$(m, n)$ time ($
   \end{algorithm}
 \end{minipage}\\\\
 
-The algorithm shown above is a modified version of Dijkstra's Algorithm \cite{CLRS}. All the edges are first initialized with $0$ as the value of the least thick edge on the path that they are on. The starting node is initialized with $\infty$ for the least thick edge. The set of visited nodes is initially empty. A max priority queue based on the least thick edge for each vertex is used. The algorithm then repeatedly extracts the max node from the priority queue which will contain the frontier of unvisited nodes. The extracted node will be the one that lies on the path with the maximum least thickest edge. The running time of this algorithm will be the same \cite{CLRS} as the one for Dijkstra's Algorithm $O(n+m)\log n$.
+The algorithm shown above is a slightly modified version of Dijkstra's Algorithm \cite{CLRS}. All the edges are first initialized with $0$ as the value of the least thick edge on the path that they are on. The starting node is initialized with $\infty$ for the least thick edge. The set of visited nodes is initially empty. A max priority queue based on the least thick edge for each vertex is used. The algorithm then repeatedly extracts the max node from the priority queue which will contain the frontier of unvisited nodes. The extracted node will be the one that lies on the path with the maximum least thickest edge. The running time of this algorithm will be the same \cite{CLRS} as the one for Dijkstra's Algorithm $O(n+m)\log n$.
 
 
 \titledquestion{Answering distance queries}
@@ -151,6 +151,17 @@ One option is to compute answers to each query as it comes. This takes $O(m+n)$ 
 \end{parts}
 
 The moral is that if $G$ is sparse, then by picking say $r = \sqrt{n}$, we can do much better than APSP, and get right distance values for all the ``long paths'' with high probability.
+
+\begin{parts}
+
+\part For any $u$ and $v$, the shortest path between them may or may not include a vertex that is in $S$. In the case that the shortest path between them includes a vertex in $S$, then  
+$\min_{s \in S} \{ d(u, s) + d(v, s) \}$ will be equal to $d(u, v)$ for the case when the $s \in S$ that is in the shortest path between $u$ and $v$ is considered. For the case where the shortest path between $u$ and $v$ does not include a vertex in $S$, a path between $u$ and $v$ through any $s \in S$ will be longer than the shortest path between them. So we can conclude that the query will always output a value $\ge d(u, v)$.
+
+\part
+
+\part
+
+\end{parts}
 
 \titledquestion{Flows and cuts -- basics}
 \begin{parts}
