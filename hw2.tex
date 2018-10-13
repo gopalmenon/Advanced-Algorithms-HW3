@@ -92,12 +92,48 @@ Consider the case shown above where we need to find the shortest path from node 
   \end{tikzpicture}
 \end{center}
 
-The shortest path now becomes the one directly from $a$ to $b$. The reason why this fix does not work is that $|w_{\min}|$ is added to each edge length and this may cause the shortest path in the original graph to no longer be the shortest one in the new graph with the changed edge weights.
+The shortest path now becomes the one directly from $a$ to $b$. The reason why this fix does not work is that $|w_{\min}|$ is added to each edge length and this may cause the shortest path in the original graph to no longer be the shortest one in the new graph with the changed edge weights, when the shortest path consists of multiple hops and the weight of each hop goes up by $|w_{\min}|$.
 
 \titledquestion{Fattest path}[6]
-Let $G$ be a directed graph in which every edge $e$ has a {\em thickness} $t_{e}$.  Given $u$ and $v$, find the path from $u$ to $v$ that maximizes the least-thick-edge on the path. [I.e., we want a path in which {\em every} edge is as thick as possible. Note that the length of the path does not matter.]
+Let $G$ be a directed graph in which every edge $e$ has a {\em thickness} $t_{e}$.  Given $u$ and $v$, find the path from $u$ to $v$ that maximizes the least-thick-edge on the path. [i.e., we want a path in which {\em every} edge is as thick as possible. Note that the length of the path does not matter.]
 
 You will get partial credit if your algorithm runs in polynomial$(m, n)$ time ($m$ and $n$ are the number of edges and vertices, as usual). To receive full credit, it should run in $O((m+n)\log n)$ time. [{\em Hint: } You might want to modify Dijkstra's algorithm and use its run time analysis as a blackbox.]
+
+\begin{minipage}{\linewidth}
+  \begin{algorithm}[H]
+    \caption{Modified Dijkstra's Algorithm}\label{Djk}
+    \begin{algorithmic}[1]
+      \Procedure{ModifiedDijkstra'sAlgorithm}{graph $G \{V, E\}$, thickness\_function $w$, start\_node $s$}
+      	\State InitializeGraph($G$,$s$)
+	\State $visited\_nodes\_set =\emptyset$
+	\State $max\_priority\_q = G.V$ \Comment{based on vertex least thick edge}
+	\While {$max\_priority\_q \neq \emptyset$}
+		\State $a=Extract\_Max(max\_priority\_q)$
+		\State $visited\_nodes\_set =  visited\_nodes\_set \cup \{a\}$
+		\For {each vertex $b \in \{ \text{neighbors of  } a$\}}
+			\State Relax($a, b, w$)
+		\EndFor
+	\EndWhile
+      \EndProcedure    
+      \Procedure{InitializeGraph}{graph $G \{V, E\}$, start\_node $s$}
+	\For {each vertext $a \in G.V$}
+		\State $a.least\_thick\_edge = 0$
+		\State $a.predecessor = NIL$
+	\EndFor
+	\State $s.least\_thick\_edge =\infty$
+      \EndProcedure
+      \Procedure{Relax}{current\_node $a$, unvisited\_neighbor $b$, thickness\_function $w$}
+	\If {$b.least\_thick\_edge < w(a,b)$}
+		\State $b.least\_thick\_edge = w(a,b)$
+		\State $b.predecessor = a$
+	\EndIf
+      \EndProcedure    
+     \end{algorithmic}
+  \end{algorithm}
+\end{minipage}\\\\
+
+The algorithm shown above is a modified version of Dijkstra's Algorithm \cite{CLRS}. All the edges are first initialized with $0$ as the value of the least thick edge on the path that they are on. The starting node is initialized with $\infty$ for the least thick edge. The set of visited nodes is initially empty. A max priority queue based on the least thick edge for each vertex is used. The algorithm then repeatedly extracts the max node from the priority queue which will contain the frontier of unvisited nodes. The extracted node will be the one that lies on the path with the maximum least thickest edge. The running time of this algorithm will be the same \cite{CLRS} as the one for Dijkstra's Algorithm $O(n+m)\log n$.
+
 
 \titledquestion{Answering distance queries}
 Let $G = (V, E)$ be an {\em undirected} graph with all edge weights equal to $1$. Let $d(i,j)$ denote the length of the shortest path between $i$ and $j$.  Now, suppose we wish to answer queries from the user of the kind ``what is $d(u, v)$''? for different $u, v$.
@@ -150,7 +186,7 @@ Suppose we are given as input a set of all ``allowed'' movies and their casts, a
 
 \begin{thebibliography}{9}
 
-\bibitem{CLRS} \enquote{22.4 Topological sort.} \textit{Introduction to Algorithms}, by Thomas H. Cormen et al., Mit Press, 2009, pp. 613-613.
+\bibitem{CLRS} \enquote{24. Single-Source Shortest Paths.} \textit{Introduction to Algorithms}, by Thomas H. Cormen et al., MIT Press, 2009, pp. 648-662.
 
 \end{thebibliography}
 
