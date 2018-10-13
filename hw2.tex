@@ -32,9 +32,67 @@ Ben Nelson and I collaborated for this assignment.
 \begin{questions}
 
 \titledquestion{Negative edges}[4]
-We saw that Dijkstra's algorithm (as such) requires all the edge weights to be non-negative in order to work. A student suggests a simple fix. Given a graph $G$ with negative weight edges (but no negative cycles), he suggests computing the least weight $w_{\min}$, and then adding $|w_{\min}$ to all the edge weights. This would make all the weights non-negative. He claims that finding the shortest path on this new graph yields the shortest path in $G$ as well.
+We saw that Dijkstra's algorithm (as such) requires all the edge weights to be non-negative in order to work. A student suggests a simple fix. Given a graph $G$ with negative weight edges (but no negative cycles), he suggests computing the least weight $w_{\min}$, and then adding $|w_{\min}|$ to all the edge weights. This would make all the weights non-negative. He claims that finding the shortest path on this new graph yields the shortest path in $G$ as well.
 
 Is there something wrong in the reasoning above? Explain with an example (of some fixed size).
+
+\begin{center}
+  \begin{tikzpicture}[
+            > = stealth, % arrow head style
+            shorten > = 1pt, % don't touch arrow head to node
+            auto,
+            node distance = 2cm, % distance between nodes
+            semithick % line style
+        ]
+
+        \tikzstyle{every state}=[
+            draw = black,
+            thick,
+            fill = white,
+            minimum size = 4mm
+        ]
+
+        \node[state] (a) {$a$};
+        \node[state] (b) [below right of=a] {$b$};
+        \node[state] (c) [above right of=a] {$c$};
+
+        \path[->] (a) edge node {3} (b);
+        \path[->] (a) edge node {5} (c);
+        \path[->] (c) edge node {-4} (b);
+
+  \end{tikzpicture}
+\end{center}
+
+Consider the case shown above where we need to find the shortest path from node $a$ to node $b$. The edge lengths are shown next to the edges. It can be seen that the shortest path from $a$ to node $b$ is through $c$, with a length of $5+(-4)=1$. The $1$-hop path from $a$ to $b$ is longer with a length of $3$. If we add $|w_{\min}| = |-4| =4$ to each each, we get the new graph shown below.
+
+\begin{center}
+  \begin{tikzpicture}[
+            > = stealth, % arrow head style
+            shorten > = 1pt, % don't touch arrow head to node
+            auto,
+            node distance = 2cm, % distance between nodes
+            semithick % line style
+        ]
+
+        \tikzstyle{every state}=[
+            draw = black,
+            thick,
+            fill = white,
+            minimum size = 4mm
+        ]
+
+        \node[state] (a) {$a$};
+        \node[state] (b) [below right of=a] {$b$};
+        \node[state] (c) [above right of=a] {$c$};
+
+        \path[->] (a) edge node {7} (b);
+        \path[->] (a) edge node {9} (c);
+        \path[->] (c) edge node {0} (b);
+
+  \end{tikzpicture}
+\end{center}
+
+The shortest path now becomes the one directly from $a$ to $b$. The reason why this fix does not work is that $|w_{\min}|$ is added to each edge length and this may cause the shortest path in the original graph to no longer be the shortest one in the new graph with the changed edge weights.
 
 \titledquestion{Fattest path}[6]
 Let $G$ be a directed graph in which every edge $e$ has a {\em thickness} $t_{e}$.  Given $u$ and $v$, find the path from $u$ to $v$ that maximizes the least-thick-edge on the path. [I.e., we want a path in which {\em every} edge is as thick as possible. Note that the length of the path does not matter.]
