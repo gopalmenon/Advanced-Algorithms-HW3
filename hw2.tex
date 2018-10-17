@@ -1,6 +1,7 @@
 \documentclass[addpoints]{exam}
 \usepackage{url}
 \usepackage{amsmath,amsthm,enumitem}
+\usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{qtree}
 \usepackage[nodayofweek,level]{datetime}
@@ -175,7 +176,41 @@ Shown below is a plot for $1- \left (1-x\right )^{\frac{5}{x}} >0.99$ that was d
 
 \includegraphics[scale=0.5]{plotprob}
 
-We can see that for all values of $\frac{r}{n}$ other than $0$, the value of $1- \left (1-\frac{r}{n} \right )^{5\frac{n}{r}}$ is more than $0.99$. This means that $\Pr[\text{some node in shortest path} \in S] > 0.99$. Since we have earlier shown that when the shortest path includes a node in $S$, the query returns the shortest path, we can conclude that when $d(u,v) > 5\frac{n}{r}$ we obtain the right answer to the distance query with probability $> 0.99$.
+We can see that for all values of $\frac{r}{n}$ other than $0$, the value of $1- \left (1-\frac{r}{n} \right )^{5\frac{n}{r}}$ is more than $0.99$. This means that $\Pr[\text{some node in shortest path} \in S] > 0.99$. Since we have earlier shown that when the shortest path includes a node in $S$, the query returns the shortest path, we can conclude that when $d(u,v) > 5\frac{n}{r}$ we obtain the right answer to the distance query with probability $> 0.99$. This can also be shown to be true with more rigor as follows:
+
+\begin{equation*}
+\begin{aligned}
+x, y \in [0,1]: x&< y\\
+-x &> -y\\
+1-x &>1-y\\
+\ln(1-x) &> \ln(1-y)\\
+\frac{5}{x}\ln(1-x) &> \frac{5}{y}\ln(1-y) \text{, since } \frac{5}{x}>\frac{5}{y}\\
+\ln(1-x)^{\frac{5}{x}} &> \ln(1-y)^{\frac{5}{y}}\\
+(1-x)^{\frac{5}{x}} &> (1-y)^{\frac{5}{y}}\\
+-(1-x)^{\frac{5}{x}} &< -(1-y)^{\frac{5}{y}}\\
+1-(1-x)^{\frac{5}{x}} &< 1-(1-y)^{\frac{5}{y}}
+\end{aligned}
+\end{equation*}
+
+This means that $1- \left (1-\frac{r}{n} \right )^{5\frac{n}{r}}$ is a strictly increasing function. To find the value of this term at values of of $\frac{r}{n}$ close to $0$:
+
+\begin{equation*}
+\begin{aligned}
+\text{Let } \ell &= (1-x)^{\frac{5}{x}}\\
+\ln \ell &= \ln \left((1-x)^{\frac{5}{x}} \right)\\
+&= \frac{5}{x} \ln (1-x)\\
+\lim_{x \to 0} \ln \ell  &= \lim_{x \to 0} \frac{5}{x} \ln (1-x)\\
+&=  \lim_{x \to 0} \frac{5\frac{-1}{1-x}}{1}\text{, by L'Hopital's rule}\\
+&= -5\\
+\Rightarrow \lim_{x \to 0} \ell &= \frac{1}{e^5}\\
+\Rightarrow \lim_{\frac{r}{n} \to 0} 1- \left (1-\frac{r}{n} \right )^{5\frac{n}{r}} &= 1 - \frac{1}{e^5}\\
+&= 0.9933\\
+&> 0.99
+\end{aligned}
+\end{equation*}
+
+Since $\lim_{\frac{r}{n} \to 0}1- \left (1-\frac{r}{n} \right )^{5\frac{n}{r}} > 0.99$ and $1- \left (1-\frac{r}{n} \right )^{5\frac{n}{r}} $ is a strictly increasing function, we can conclude that when $d(u,v) > 5\frac{n}{r}$ we obtain the right answer to the distance query with probability $> 0.99$.
+
 \end{parts}
 
 \titledquestion{Flows and cuts -- basics}
@@ -187,6 +222,12 @@ We can see that for all values of $\frac{r}{n}$ other than $0$, the value of $1-
 \part[5] {\bf Vertex disjoint paths.}  Let $G$ be an unweighted directed graph.  We saw how to construct multiple {\em edge}-disjoint paths from two given vertices $u$ and $v$ by simply viewing the graph as a flow network with every edge having a unit capacity, and finding the max flow from $u$ to $v$.
 
 Now, suppose we wish to find the maximum number of paths possible from $u$ to $v$ that do not share any {\em vertices}.  Show how to cast this as a max-flow problem (of size polynomial in the size of $G$). 
+\end{parts}
+
+\begin{parts}
+\part
+\part
+
 \end{parts}
 
 \titledquestion{Matchings}
