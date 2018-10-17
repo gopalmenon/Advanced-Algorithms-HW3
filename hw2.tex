@@ -11,6 +11,7 @@
 \usetikzlibrary{arrows, automata}
 \usepackage{algorithm,algpseudocode}
 \usepackage{graphicx}
+\usetikzlibrary{positioning}
 
 \newtheorem*{claim}{Claim}
 \definecolor{qcolor}{rgb}{0, 0, 0.3}
@@ -288,10 +289,97 @@ Now, suppose we wish to find the maximum number of paths possible from $u$ to $v
   \end{tikzpicture}
 \end{center}
 
+\part Consider an example of an unweighted directed graph shown below. We need to find the maximum number of paths possible from $u$ to $v$ that do not share any {\em vertices}. 
 
+\begin{center}
+  \begin{tikzpicture}[
+            > = stealth, % arrow head style
+            shorten > = 1pt, % don't touch arrow head to node
+            auto,
+            node distance = 2cm, % distance between nodes
+            semithick % line style
+        ]
 
+        \tikzstyle{every state}=[
+            draw = black,
+            thick,
+            fill = white,
+            minimum size = 4mm
+        ]
 
-\part
+        \node[state, fill = green] (u) {$u$};
+        \node[state] [above right=0.7cm and 1.5cm of u] (a) {$a$};
+        \node[state] [right=0.7cm and 2cm of a] (c) {$c$};
+        \node[state] [below right=0.7cm and 1.5cm of u] (b) {$b$};
+        \node[state] [right=0.7cm and 2cm of b] (d) {$d$};
+        \node[state, fill = red] [below right=0.7cm and 1.5cm of c] (v) {$v$};
+        \node[state] [above right=0.7cm and 1.5cm of a] (f) {$f$};
+        
+        \path[->] (u) edge node {} (a);
+        \path[->] (u) edge node {} (b);
+        \path[->] (b) edge node {} (a);
+        \path[->] (a) edge node {} (c);
+        \path[->] (c) edge node {} (d);
+        \path[->] (b) edge node {} (d);
+        \path[->] (c) edge node {} (v);
+        \path[->] (d) edge node {} (v);
+        \path[->] (a) edge node {} (f);
+        \path[->] (f) edge node {} (v);
+
+  \end{tikzpicture}
+\end{center}
+
+This can be solved for the graph shown above and any unweighted directed graph by replacing every vertex other than $u$ and $v$ by a pair of vertices connected by a directed edge in a modified graph. Every edge leading into a node in the original graph, will be replaced by the same edge leading into the first node in the new node pair with the directed edge leaving the new node. Every edge leaving a node in the original graph, will be replaced by the same edge leaving the second node in the new node pair with the directed edge entering the new node. All edge weights or capacity between the new nodes will be made $1$ and the capacity between the other nodes will be made infinite. This construction is shown below: 
+
+\begin{center}
+  \begin{tikzpicture}[
+            > = stealth, % arrow head style
+            shorten > = 1pt, % don't touch arrow head to node
+            auto,
+            node distance = 2cm, % distance between nodes
+            semithick % line style
+        ]
+
+        \tikzstyle{every state}=[
+            draw = black,
+            thick,
+            fill = white,
+            minimum size = 4mm
+        ]
+
+        \node[state, fill = green] (u) {$u$};
+        \node[state] [above right=0.7cm and 2.75cm of u] (a1) {$a_1$};
+        \node[state] [right=0.7cm and 0.5cm of a1] (a2) {$a_2$};
+        \node[state] [right=0.7cm and 2cm of a2] (c1) {$c1$};
+        \node[state] [right=0.7cm and 0.5cm of c1] (c2) {$c_2$};
+        \node[state] [below right=0.7cm and 1.5cm of u] (b1) {$b1$};
+        \node[state] [right=0.7cm and 0.5cm of b1] (b2) {$b_2$};
+        \node[state] [right=0.7cm and 4.5cm of b2] (d1) {$d1$};
+        \node[state] [right=0.7cm and 0.5cm of d1] (d2) {$d_2$};
+        \node[state, fill = red] [below right=0.7cm and 1.5cm of c2] (v) {$v$};
+        \node[state] [above right=1cm and 4.5cm of a] (f1) {$f_1$};
+        \node[state] [right=0.7cm and 0.5cm of f1] (f2) {$f_2$};
+        
+        \path[->] (u) edge node {$\infty$} (a1);
+        \path[->] (a1) edge node {1} (a2);
+        \path[->] (u) edge node {$\infty$} (b1);
+        \path[->] (b1) edge node {1} (b2);
+        \path[->] (b2) edge node {$\infty$} (a1);
+        \path[->] (a2) edge node {$\infty$} (c1);
+        \path[->] (c1) edge node {1} (c2);
+        \path[->] (c2) edge node {$\infty$} (d1);
+        \path[->] (d1) edge node {1} (d2);
+        \path[->] (b2) edge node {$\infty$} (d1);
+        \path[->] (c2) edge node {$\infty$} (v);
+        \path[->] (d2) edge node {$\infty$} (v);
+        \path[->] (a2) edge node {$\infty$} (f1);
+        \path[->] (f1) edge node {1} (f2);
+        \path[->] (f2) edge node {$\infty$} (v);
+
+  \end{tikzpicture}
+\end{center}
+
+Now if we find the max flow between $u$ and $v$, the flow through the original nodes, which have now been split into two nodes, will be restricted to one path due to the edge capacity of $1$. The max flow will end up finding the maximum number of paths possible from $u$ to $v$ that do not share any vertices. The maximum number of paths will be the result of the infinite capacity of the edges corresponding to the ones in the original graph, and since each vertex of the original graph will only be used once for a single path, the paths will not share any vertices.
 
 \end{parts}
 
