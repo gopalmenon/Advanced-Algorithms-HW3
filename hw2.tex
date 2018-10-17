@@ -225,7 +225,72 @@ Now, suppose we wish to find the maximum number of paths possible from $u$ to $v
 \end{parts}
 
 \begin{parts}
-\part
+
+\part We need to make some modifications to the graph in order to solve this. For each weighted undirected edge in the graph, replace it with two directed edges with the same weight going between the two edges that the undirected edge used to connect. In the bipartite graph below, the nodes in subsets $S$ and $T$ are represented by $\{S_1, \ldots, S_9\}$ and $\{T_1, \ldots, T_7\}$. The number of nodes is just an example and there is no limitation on the number of nodes. The edges in the original graph $G$ have not been shown for simplicity. Create a source node $S'$ and a sink node $T'$ and connect them to all nodes in $S$ and $T$ respectively as shown below, with edges of infinite capacity. Find the maximum flow from $S'$ to $T'$ and find the min cut using the last residual graph. The min cut will be on the paths between subsets $S$ and $T$ and the required subset of the edges with minimum total weight, such that after removing these edges, there is no path left from any $s \in S$ to $t \in T$, will be the edges in $G$ corresponding to the directional edges that were removed from the modified graph.
+\begin{center}
+  \begin{tikzpicture}[
+            > = stealth, % arrow head style
+            shorten > = 1pt, % don't touch arrow head to node
+            auto,
+            node distance = 2cm, % distance between nodes
+            semithick % line style
+        ]
+
+        \tikzstyle{every state}=[
+            draw = black,
+            thick,
+            fill = white,
+            minimum size = 4mm
+        ]
+
+        \node[state, fill = orange] (b1) {$S_1$};
+        \node[state, fill = orange] [right of=b1] (b2) {$S_2$};
+        \node[state, fill = orange] [right of=b2](b3) {$S_3$};
+        \node[state, fill = orange] [right of=b3](b4) {$S_4$};
+        \node[state, fill = orange] [right of=b4](b5) {$S_5$};
+        \node[state, fill = orange]  [right of=b5] (b6) {$S_6$};
+        \node[state, fill = orange] [right of=b6] (b7) {$S_7$};
+        \node[state, fill = orange]  [right of=b7] (b8) {$S_8$};
+        \node[state, fill = orange] [right of=b8] (b9) {$S_9$};
+        
+        \node[state, fill = green] [above of=b5] (S) {$S'$};
+        
+        \node[state, fill = yellow] [below of=b2] (w1) {$T_1$};
+        \node[state, fill = yellow] [right of=w1] (w2) {$T_2$};
+        \node[state, fill = yellow] [right of=w2](w3) {$T_3$};
+        \node[state, fill = yellow] [right of=w3](w4) {$T_4$};
+        \node[state, fill = yellow] [right of=w4](w5) {$T_5$};
+        \node[state, fill = yellow]  [right of=w5] (w6) {$T_6$};
+        \node[state, fill = yellow] [right of=w6] (w7) {$T_7$};
+
+        
+        \node[state, fill = red] [below of=w4] (T) {$T'$};
+
+        \path[->,line width=1.8pt] (S) edge node {} (b1);
+        \path[->,line width=1.8pt] (S) edge node {} (b2);
+        \path[->,line width=1.8pt] (S) edge node {} (b3);
+        \path[->,line width=1.8pt] (S) edge node {} (b4);
+        \path[->,line width=1.8pt] (S) edge node {} (b5);
+        \path[->,line width=1.8pt] (S) edge node {} (b6);
+        \path[->,line width=1.8pt] (S) edge node {} (b7);
+        \path[->,line width=1.8pt] (S) edge node {} (b8);
+        \path[->,line width=1.8pt] (S) edge node {} (b9);
+        
+        \path[->,line width=1.8pt] (w1) edge node {} (T);
+        \path[->,line width=1.8pt] (w2) edge node {} (T);
+        \path[->,line width=1.8pt] (w3) edge node {} (T);
+        \path[->,line width=1.8pt] (w4) edge node {} (T);
+        \path[->,line width=1.8pt] (w5) edge node {} (T);
+        \path[->,line width=1.8pt] (w6) edge node {} (T);
+        \path[->,line width=1.8pt] (w7) edge node {} (T);
+
+
+  \end{tikzpicture}
+\end{center}
+
+
+
+
 \part
 
 \end{parts}
