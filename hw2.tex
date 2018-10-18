@@ -12,7 +12,12 @@
 \usepackage{algorithm,algpseudocode}
 \usepackage{graphicx}
 \usetikzlibrary{positioning}
+\usetikzlibrary{calc,arrows.meta,positioning}
 
+\tikzset{
+    every node/.style={font=\sffamily\small},
+    main node/.style={thick,circle,draw,font=\sffamily\Large}
+}
 \newtheorem*{claim}{Claim}
 \definecolor{qcolor}{rgb}{0, 0, 0.3}
 \definecolor{acolor}{rgb}{0, 0, 0}
@@ -384,13 +389,70 @@ Now if we find the max flow between $u$ and $v$, the flow through the original n
 \end{parts}
 
 \titledquestion{Matchings}
-Consider the matching problem that we have encountered before, but with {\em binary} weights. I.e., suppose we have $n$ children and $n$ gifts, and every child has a $0/1$ happiness value associated with each gift. The goal is to assign the gifts to the children, so as to maximize the total happiness. The question we wish to understand is: is there an assignment in which the total happiness is $n$? (I.e., can every child be assigned a gift to which he/she has a happiness value of $1$?)
+Consider the matching problem that we have encountered before, but with {\em binary} weights. i.e., suppose we have $n$ children and $n$ gifts, and every child has a $0/1$ happiness value associated with each gift. The goal is to assign the gifts to the children, so as to maximize the total happiness. The question we wish to understand is: is there an assignment in which the total happiness is $n$? (I.e., can every child be assigned a gift to which he/she has a happiness value of $1$?)
 
 \begin{parts}
 \part[2] Let $\Gamma(i)$ denote the set of gifts for which child $i$ has a happiness value equal to $1$. One trivial case in which the total happiness cannot be made $n$ is if there is a set $R$ of children such that $\cup_{r \in R} \Gamma(r)$ has size $< |R|$. Give a short reason why this is so.
 
 \part[5] Let us call a set $R$ as above a {\em trivial obstruction} (to the presence of an assignment of total happiness $n$). Prove that whenever the optimum total happiness is $<n$, such a trivial obstruction must exist. [{\em Hint:} use the max-flow min-cut theorem!] 
 \end{parts}
+
+\begin{parts}
+
+\part Since $|\cup_{r \in R} \Gamma(r)| < |R|$, whatever kind of matching is done for the children in set $R$ there will always be some child who will not get a gift. The reason is that the size of the set of the union of gifts that each child in set $R$ likes is less than the number of children in the set $R$.
+
+\part The matching of gifts to children can be solved by constructing a bipartite graph with nodes representing children on one side and nodes representing gifts on the other. For every gift that a child likes, construct a directed edge of capacity $1$ from the child to the gift. Put a node representing the source node on the side of the bipartite graph with the nodes representing the children. Connect the source node using directed edges of capacity $1$ to each child with the edge pointing away from the source. Construct a sink node on the other side of the graph. Connect each gift node to the sink node using directed edges of weight $1$ going into the sink. This construction is shown below:
+
+\begin{tikzpicture}[->,>={Stealth[round,sep]},shorten >=1pt,auto,node distance=2.5cm]
+
+    \node[main node] (1) {$C_1$};
+    \node[main node] (2) [right =of 1]{$C_2$};
+    \node[main node] (3) [right =of 2]{$C_3$};
+    \node[main node] (4) [right =of 3]{$C_4$};
+    \node[main node] (5) [right =of 4]{$C_n$};
+    
+    \node[main node] (6) [below =of 1]{$G_1$};
+    \node[main node] (7) [right =of 6]{$G_2$};
+    \node[main node] (8) [right =of 7]{$G_3$};
+    \node[main node] (9) [right =of 8]{$G_4$};
+    \node[main node] (10) [right =of 9]{$G_n$};
+
+    \node[main node] (11) [above =of 3]{$S$};
+
+
+    \node at ($(4)!.5!(5)$) {\ldots};
+    \node at ($(9)!.5!(10)$) {\ldots};
+
+    \draw (11) -- (1);
+    \draw (11) -- (1) node [midway, above] (TextNode) {1};
+     \draw (11) -- (2);
+    \draw (11) -- (2) node [midway, above] (TextNode) {1};
+    \draw (11) -- (3);
+    \draw (11) -- (3) node [midway, left] (TextNode) {1};
+    \draw (11) -- (4);
+    \draw (11) -- (4) node [midway, above] (TextNode) {1};
+    \draw (11) -- (5);
+    \draw (11) -- (5) node [midway, above] (TextNode) {1};
+
+    \node[main node] (12) [below =of 8]{$T$};
+
+    \draw (6) -- (12);
+    \draw (6) -- (12) node [midway, above] (TextNode) {1};
+    \draw (7) -- (12);
+    \draw (7) -- (12) node [midway, above] (TextNode) {1};
+    \draw (8) -- (12);
+    \draw (8) -- (12) node [midway, left] (TextNode) {1};
+    \draw (9) -- (12);
+    \draw (9) -- (12) node [midway, above] (TextNode) {1};
+    \draw (10) -- (12);
+    \draw (10) -- (12) node [midway, above] (TextNode) {1};
+   
+\end{tikzpicture}
+\end{parts}
+
+The source node is represented by $S$, the child nodes are represented by $\{C_1,\ldots,C_n\}$ and the gift nodes by $\{G_1,\ldots,G_n\}$ and the sink node by $T$. The capacities of the edges going from the source node and into the sink node is shown by the number $1$ next to the directed edges. The edges between the child and gift nodes have not been shown.
+
+We can now find the max flow from the source $S$ to the sink $T$. Since the edge capacities into the child nodes and out of the gift nodes are each $1$, the maximum flow possible will be $n$. The flow from the child to the gift nodes will correspond to one of the optimum matchings of children to gifts for maximum happiness. In case the maximum happiness found through maximum flow is less than $n$, it means that at least one child node and at least one gift node do not have any flow through them. Now consider the case when $R=\{C_1,\ldots,C_n\}$. In this case $|\cup_{r \in R} \Gamma(r)| < |R|$. If this were not the case there would have been perfect matching and maximum happiness would have been $n$. If $|\cup_{r \in R} \Gamma(r)|$ had been equal to $|R|$ ($=n$ in this case), the maximum happiness would have been $n$ since it would have been possible to find a gift for each child through max flow. So the trivial obstruction was found for the case when $R=\{C_1,\ldots,C_n\}$.
 
 \titledquestion{Matching games}
 Alice and Bob play the following game: Alice starts by naming an actress A1. Bob must then name an actor B1 who has appeared in a movie with A1. Then Alice must name an actress A2 who appeared with B1, and so on. (Alice must always pick from the set of actresses, and Bob must pick from the set of actors.) The catch is that the players are not allowed to name anyone they have named already. The game ends and a player loses if he/she cannot name an actor/actress who hasn't been named already.
