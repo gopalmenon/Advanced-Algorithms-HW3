@@ -464,6 +464,16 @@ Suppose we are given as input a set of all ``allowed'' movies and their casts, a
 \part[7] If $G$ does {\em not} have a perfect matching, prove that Alice has a winning strategy.  [{\em Hint:} consider small examples; start with a maximum matching, and think of how Alice might want to start the play.]
 \end{parts}
 
+\begin{parts}
+
+\part Consider the case when there is only $1$ actor and $1$ actress. Since there is perfect matching, after Alice selects the $1$ available actress, Bob can choose the actor paired with that actress in the perfect matching. Alice will not have any more actresses to choose and thus Bob will win. This is the inductive base case. Assume that when there are $n$ pairs of actresses and actors, Bob wins. In the case when there are $n+1$ pairs, Alice has the option of choosing the actress who has appeared with the actor that Bob last chose, if there is one available. Since there is perfect matching, when Alice chooses that actress, Bob is assured that there will be an actor who has appeared with the actress last chosen by Alice. Since there are no more actresses to choose from, as all of the $n+1$ pairs have been used up, Bob will win. On the other hand, if Alice does not have an actress who has appeared with the actor that Bob last chose, Bob wins. 
+
+Based on the above inductive proof, we can say that Bob always wins and his strategy will be to try an choose an actor such that Alice does not have an actress to choose. If that does not work, Bob will always win when they run out of actors and actresses to choose from.
+
+\part
+
+\end{parts}
+
 \end{questions}
 
 \begin{thebibliography}{9}
