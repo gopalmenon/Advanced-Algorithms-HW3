@@ -132,7 +132,7 @@ You will get partial credit if your algorithm runs in polynomial$(m, n)$ time ($
 	\State $s.least\_thick\_edge =\infty$
       \EndProcedure
       \Procedure{Relax}{current\_node $a$, unvisited\_neighbor $b$, thickness\_function $w$}
-	\If {$b.least\_thick\_edge < w(a,b)$}
+	\If {$b.least\_thick\_edge < min(w(a,b), a.least\_thick\_edge)$}
 		\State $b.least\_thick\_edge = w(a,b)$
 		\State $b.predecessor = a$
 	\EndIf
@@ -143,6 +143,7 @@ You will get partial credit if your algorithm runs in polynomial$(m, n)$ time ($
 
 The algorithm shown above is a slightly modified version of Dijkstra's Algorithm \cite{CLRS}. All the edges are first initialized with $0$ as the value of the least thick edge on the path that they are on. The starting node is initialized with $\infty$ for the least thick edge. The set of visited nodes is initially empty. A max priority queue based on the least thick edge for each vertex is used. The algorithm then repeatedly extracts the max node from the priority queue which will contain the frontier of unvisited nodes. The extracted node will be the one that lies on the path with the maximum least thickest edge. The running time of this algorithm will be the same \cite{CLRS} as the one for Dijkstra's Algorithm $O(n+m)\log n$.
 
+To prove correctness of the algorithm described above, we can prove that as each node is removed from $max\_priority\_q$ it will have the correct value of the attribute $least\_thick\_edge$ for the path to it and the predecessor. Consider the base case of when the $least\_thick\_edge$ attribute of the neighbors of the starting node $s$ is being updated. Each of these neighbors will get the thickness of the edge from node $s$ to it. And that will be the correct value of the least thick edge on the path to it. The predecessor will be node $s$ and this is correct. Now assume that at a particular step, the node removed from $max\_priority\_q$ will have the correct value of the attribute $least\_thick\_edge$ for the path to it and for the predecessor. The next node removed from $max\_priority\_q$ will be the one with the maximum value of the attribute $least\_thick\_edge$. Every neighbor of this node will be checked to see if its $least\_thick\_edge$ attribute has a value less than the minimum of thickness of the edge to it and attribute $least\_thick\_edge$ of the previous node. If it is less, then it will be replaced by the minimum of thickness of the edge to it and attribute $least\_thick\_edge$ of the previous node and its predecessor will be the node that was removed. So the path to the neighbor node changes to the one through the last removed node as this is the one with maximum least thickness. If it is not less, then the best path to the neighbor node will not be through the last removed node and whatever path it already has, has a larger least thick node. So in both the cases the values of $least\_thick\_edge$ and predecessor will be correct. This proves the correctness of the algorithm. 
 
 \titledquestion{Answering distance queries}
 Let $G = (V, E)$ be an {\em undirected} graph with all edge weights equal to $1$. Let $d(i,j)$ denote the length of the shortest path between $i$ and $j$.  Now, suppose we wish to answer queries from the user of the kind ``what is $d(u, v)$''? for different $u, v$.
@@ -164,7 +165,7 @@ The moral is that if $G$ is sparse, then by picking say $r = \sqrt{n}$, we can d
 \begin{parts}
 
 \part For any $u$ and $v$, the shortest path between them may or may not include a vertex that is in $S$. In the case that the shortest path between them includes a vertex in $S$, then  
-$\min_{s \in S} \{ d(u, s) + d(v, s) \}$ will be equal to $d(u, v)$ for the case when the $s \in S$ that is in the shortest path between $u$ and $v$ is considered. For the case where the shortest path between $u$ and $v$ does not include a vertex in $S$, a path between $u$ and $v$ through any $s \in S$ will be longer than the shortest path between them. So we can conclude that the query will always output a value $\ge d(u, v)$.
+$\min_{s \in S} \{ d(u, s) + d(v, s) \}$ will be equal to $d(u, v)$ for the case when the $s \in S$ that is in the shortest path between $u$ and $v$ is considered. The reason is that subpaths of shortest paths are shortest paths (by Lemma 24.1 \cite{CLRS}). Consider the case when the shortest path between $u$ and $v$ contains a node $s_i \in S$. $d(u, s_i) + d(v, s_i)$ will be equal to $d(u,v)$ by the above Lemma and $\min_{s \in S} \{ d(u, s) + d(v, s) \}$ will be equal to $d(u, v)$. For the case where the shortest path between $u$ and $v$ does not include a vertex in $S$, a path between $u$ and $v$ through any $s \in S$ will be longer than the shortest path between them. So we can conclude that the query will always output a value $\ge d(u, v)$.
 
 \part Assuming that it takes constant time to decide whether to pick a vertex for the set $S$ or not, it will take $O(n)$ to look at every vertex and decide whether to include it or not. For every vertex $s \in S$, we would need to do a BFS in $O(m+n)$ time and then compute and store $d(s,u)$ for every $u \in V$. This will take a total of $O( n  + r \times (m+n)) = O(r \times (m+n))$ time and will need $O(n \times |S|)=O(n \times r)$ storage to store the distance to each of the $n$ vertices from every vertex $s \in S$.
 
@@ -334,7 +335,7 @@ Now, suppose we wish to find the maximum number of paths possible from $u$ to $v
   \end{tikzpicture}
 \end{center}
 
-This can be solved for the graph shown above and any unweighted directed graph by replacing every vertex other than $u$ and $v$ by a pair of vertices connected by a directed edge in a modified graph. Every edge leading into a node in the original graph, will be replaced by the same edge leading into the first node in the new node pair with the directed edge leaving the new node. Every edge leaving a node in the original graph, will be replaced by the same edge leaving the second node in the new node pair with the directed edge entering the new node. All edge weights or capacity between the new nodes will be made $1$ and the capacity between the other nodes will be made infinite. This construction is shown below: 
+This can be solved for the graph shown above and any unweighted directed graph by replacing every vertex other than $u$ and $v$ by a pair of vertices connected by a directed edge in a modified graph. The modified graph will have $n-2$ extra edges and so this new problem is clearly a polynomial in $G$ as it now has $n$ vertices and $m+n-2$ edges. Every edge leading into a node in the original graph, will be replaced by the same edge leading into the first node in the new node pair with the directed edge leaving the new node. Every edge leaving a node in the original graph, will be replaced by the same edge leaving the second node in the new node pair with the directed edge entering the new node. All edge weights or capacity between the new nodes will be made $1$ and the capacity between the other nodes will be made infinite. This construction is shown below: 
 
 \begin{center}
   \begin{tikzpicture}[
@@ -399,7 +400,7 @@ Consider the matching problem that we have encountered before, but with {\em bin
 
 \begin{parts}
 
-\part Since $|\cup_{r \in R} \Gamma(r)| < |R|$, whatever kind of matching is done for the children in set $R$ there will always be some child who will not get a gift. The reason is that the size of the set of the union of gifts that each child in set $R$ likes is less than the number of children in the set $R$.
+\part Since $|\cup_{r \in R} \Gamma(r)| < |R|$, whatever kind of matching is done for the children in set $R$ there will always be some child who will not get a gift. The reason is that the size of the set of the union of gifts that each child in set $R$ likes is less than the number of children in the set $R$. So the total happiness cannot be made $n$.
 
 \part The matching of gifts to children can be solved by constructing a bipartite graph with nodes representing children on one side and nodes representing gifts on the other. For every gift that a child likes, construct a directed edge of capacity $1$ from the child to the gift. Put a node representing the source node on the side of the bipartite graph with the nodes representing the children. Connect the source node using directed edges of capacity $1$ to each child with the edge pointing away from the source. Construct a sink node on the other side of the graph. Connect each gift node to the sink node using directed edges of weight $1$ going into the sink. This construction is shown below:
 
