@@ -133,7 +133,7 @@ You will get partial credit if your algorithm runs in polynomial$(m, n)$ time ($
       \EndProcedure
       \Procedure{Relax}{current\_node $a$, unvisited\_neighbor $b$, thickness\_function $w$}
 	\If {$b.least\_thick\_edge < min(w(a,b), a.least\_thick\_edge)$}
-		\State $b.least\_thick\_edge = w(a,b)$
+		\State $b.least\_thick\_edge = min(w(a,b), a.least\_thick\_edge)$
 		\State $b.predecessor = a$
 	\EndIf
       \EndProcedure    
@@ -141,9 +141,11 @@ You will get partial credit if your algorithm runs in polynomial$(m, n)$ time ($
   \end{algorithm}
 \end{minipage}\\\\
 
-The algorithm shown above is a slightly modified version of Dijkstra's Algorithm \cite{CLRS}. All the edges are first initialized with $0$ as the value of the least thick edge on the path that they are on. The starting node is initialized with $\infty$ for the least thick edge. The set of visited nodes is initially empty. A max priority queue based on the least thick edge for each vertex is used. The algorithm then repeatedly extracts the max node from the priority queue which will contain the frontier of unvisited nodes. The extracted node will be the one that lies on the path with the maximum least thickest edge. The running time of this algorithm will be the same \cite{CLRS} as the one for Dijkstra's Algorithm $O(n+m)\log n$.
+The algorithm shown above is a slightly modified version of Dijkstra's Algorithm \cite{CLRS}. All the edges are first initialized with $0$ as the value of the least thick edge on the path that they are on. The starting node is initialized with $\infty$ for the least thick edge. The set of visited nodes is initially empty. A max priority queue based on the least thick edge for each vertex is used. The algorithm then repeatedly removes the max node from the priority queue which will contain the frontier of unvisited nodes. The extracted node will be the one that lies on the path with the maximum least thickest edge. The running time of this algorithm will be the same \cite{CLRS} as the one for Dijkstra's Algorithm $O((n+m)\log n)$.
 
-To prove correctness of the algorithm described above, we can prove that as each node is removed from $max\_priority\_q$ it will have the correct value of the attribute $least\_thick\_edge$ for the path to it and the predecessor. Consider the base case of when the $least\_thick\_edge$ attribute of the neighbors of the starting node $s$ is being updated. Each of these neighbors will get the thickness of the edge from node $s$ to it. And that will be the correct value of the least thick edge on the path to it. The predecessor will be node $s$ and this is correct. Now assume that at a particular step, the node removed from $max\_priority\_q$ will have the correct value of the attribute $least\_thick\_edge$ for the path to it and for the predecessor. The next node removed from $max\_priority\_q$ will be the one with the maximum value of the attribute $least\_thick\_edge$. Every neighbor of this node will be checked to see if its $least\_thick\_edge$ attribute has a value less than the minimum of thickness of the edge to it and attribute $least\_thick\_edge$ of the previous node. If it is less, then it will be replaced by the minimum of thickness of the edge to it and attribute $least\_thick\_edge$ of the previous node and its predecessor will be the node that was removed. So the path to the neighbor node changes to the one through the last removed node as this is the one with maximum least thickness. If it is not less, then the best path to the neighbor node will not be through the last removed node and whatever path it already has, has a larger least thick node. So in both the cases the values of $least\_thick\_edge$ and predecessor will be correct. This proves the correctness of the algorithm. 
+To prove correctness of the algorithm described above, we can prove that for each neighboring node of a node added to the set of visited nodes and removed from the max priority queue, the $least\_thick\_edge$ for the path to it and the predecessor will have the correct values. Consider the base case of when the $least\_thick\_edge$ attribute of the neighbors of the starting node $s$ is being updated. Each of these neighbors will get the thickness of the edge from node $s$ to it. And that will be the correct value of the least thick edge on the path to it. The predecessor will be node $s$ and this is correct. Now assume that at a particular step, the node removed from $max\_priority\_q$ will update the correct value of the attribute $least\_thick\_edge$ for the path to them and for the predecessor for all its neighbors. The next node removed from $max\_priority\_q$ will be the one with the maximum value of the attribute $least\_thick\_edge$. Every neighbor of this node will be checked to see if its $least\_thick\_edge$ attribute has a value less than the minimum of thickness of the edge to it and attribute $least\_thick\_edge$ of the previous node. If it is less, then it will be replaced by the minimum of thickness of the edge to it and attribute $least\_thick\_edge$ of the previous node and its predecessor will be the node that was removed from the max priority queue. So the path to the neighbor node changes to the one through the last removed node as this is the one with maximum least thickness. If it is not less, then the best path to the neighbor node will not be through the last removed node and whatever path it already has, has a larger least thick node. So in both the cases the values of $least\_thick\_edge$ and predecessor will be correct. This proves the correctness of the algorithm. 
+
+After the algorithm ends, each node, including $v$, will have the value of the $least\_thick\_edge$ of the path to it and its predecessor for the path from $u$. So the path to any node from $u$ can be traced back using the predecessor attribute. The use of the max priority queue maximizes the least-thick-edge on the path to each node.
 
 \titledquestion{Answering distance queries}
 Let $G = (V, E)$ be an {\em undirected} graph with all edge weights equal to $1$. Let $d(i,j)$ denote the length of the shortest path between $i$ and $j$.  Now, suppose we wish to answer queries from the user of the kind ``what is $d(u, v)$''? for different $u, v$.
@@ -172,8 +174,9 @@ $\min_{s \in S} \{ d(u, s) + d(v, s) \}$ will be equal to $d(u, v)$ for the case
 \part \begin{equation*}
 \begin{aligned}
 d(u,v) &> 5\frac{n}{r}\\
-\Rightarrow \text{Number of nodes in shortest path between } u \text{ and } v &> 5\frac{n}{r}\\
-\Pr[\text{some node in shortest path} \not \in S] &= 1-\frac{r}{n}\\
+\Rightarrow \text{Number of nodes in shortest path between } u \text{ and } v &> 5\frac{n}{r} \text{, since each edge is of length 1}\\
+\Pr[\text{a specific node in shortest path}  \in S] &= \frac{r}{n}\\
+\Pr[\text{a specific node in shortest path} \not \in S] &= 1-\frac{r}{n}\\
 \Pr[\text{no node in shortest path} \in S] &< \left (1-\frac{r}{n} \right )^{5\frac{n}{r}}\\
 \Pr[\text{some node in shortest path} \in S] &> 1- \left (1-\frac{r}{n} \right )^{5\frac{n}{r}}\\
 \end{aligned}
@@ -234,6 +237,9 @@ Now, suppose we wish to find the maximum number of paths possible from $u$ to $v
 \begin{parts}
 
 \part We need to make some modifications to the graph in order to solve this. For each weighted undirected edge in the graph, replace it with two directed edges with the same weight going between the two edges that the undirected edge used to connect. In the bipartite graph below, the nodes in subsets $S$ and $T$ are represented by $\{S_1, \ldots, S_9\}$ and $\{T_1, \ldots, T_7\}$. The number of nodes is just an example and there is no limitation on the number of nodes. The edges in the original graph $G$ have not been shown for simplicity. Create a source node $S'$ and a sink node $T'$ and connect them to all nodes in $S$ and $T$ respectively as shown below, with edges of infinite capacity. Find the maximum flow from $S'$ to $T'$ and find the min cut using the last residual graph. The min cut will be on the paths between subsets $S$ and $T$ and the required subset of the edges with minimum total weight, such that after removing these edges, there is no path left from any $s \in S$ to $t \in T$, will be the edges in $G$ corresponding to the directional edges that were removed from the modified graph.
+
+None of the edges between nodes within $S$ or within $T$ will be cut as they will never be part of a min cut. The min cut will always be on the paths between $S$ and $T$.
+
 \begin{center}
   \begin{tikzpicture}[
             > = stealth, % arrow head style
@@ -385,7 +391,7 @@ This can be solved for the graph shown above and any unweighted directed graph b
   \end{tikzpicture}
 \end{center}
 
-Now if we find the max flow between $u$ and $v$, the flow through the original nodes, which have now been split into two nodes, will be restricted to one path due to the edge capacity of $1$. The max flow will end up finding the maximum number of paths possible from $u$ to $v$ that do not share any vertices. The maximum number of paths will be the result of the infinite capacity of the edges corresponding to the ones in the original graph, and since each vertex of the original graph will only be used once for a single path, the paths will not share any vertices.
+Now if we find the max flow between $u$ and $v$, the flow through the original nodes, which have now been split into two nodes, will be restricted to one path due to the edge capacity of $1$. The max flow will end up finding the maximum number of paths possible from $u$ to $v$ that do not share any vertices. The maximum number of paths will be the result of the infinite capacity of the edges corresponding to the ones in the original graph, since the algorithm will keep trying to push more flow and will only be limited the edges having capacity $1$. Since each vertex of the original graph will only be used once for a single path, the paths will not share any vertices.
 
 \end{parts}
 
@@ -467,7 +473,7 @@ Suppose we are given as input a set of all ``allowed'' movies and their casts, a
 
 \begin{parts}
 
-\part Consider the case when there is only $1$ actor and $1$ actress. Since there is perfect matching, after Alice selects the $1$ available actress, Bob can choose the actor paired with that actress in the perfect matching. Alice will not have any more actresses to choose and thus Bob will win. This is the inductive base case. Assume that when there are $n$ pairs of actresses and actors, Bob wins. In the case when there are $n+1$ pairs, Alice has the option of choosing the actress who has appeared with the actor that Bob last chose, if there is one available. Since there is perfect matching, when Alice chooses that actress, Bob is assured that there will be an actor who has appeared with the actress last chosen by Alice. Since there are no more actresses to choose from, as all of the $n+1$ pairs have been used up, Bob will win. On the other hand, if Alice does not have an actress who has appeared with the actor that Bob last chose, Bob wins. 
+\part Consider the case when there is only $1$ actor and $1$ actress. Since there is perfect matching, after Alice selects the $1$ available actress, Bob can choose the actor paired with that actress in the perfect matching. Alice will not have any more actresses to choose and thus Bob will win. This is the inductive base case. Assume that when there are $n$ pairs of actresses and actors, Bob wins. In the case when there are $n+1$ pairs, Alice has the option of choosing the actress who has appeared with the actor that Bob last chose (from the $n$ pairs), if there is one available. Since there is perfect matching, when Alice chooses that actress, Bob is assured that there will be an actor who has appeared with the actress last chosen by Alice. Since there are no more actresses to choose from, as all of the $n+1$ pairs have been used up, Bob will win. On the other hand, if Alice does not have an actress who has appeared with the actor that Bob last chose, Bob wins. 
 
 Based on the above inductive proof, we can say that Bob always wins and his strategy will be to try an choose an actor such that Alice does not have an actress to choose. If that does not work, Bob will always win when they run out of actors and actresses to choose from.
 
@@ -481,7 +487,7 @@ Based on the above inductive proof, we can say that Bob always wins and his stra
 
 \end{enumerate}
 
-There cannot be a chain that ends at Bob's side with Alice not having any of the opportunities listed above in a case where perfect matching does not exist. So Alice always has a winning strategy.
+There cannot be a chain that ends at Bob's side with Alice not having any of the opportunities listed above in a case when perfect matching does not exist. So Alice always has a winning strategy.
 
 \end{parts}
 
