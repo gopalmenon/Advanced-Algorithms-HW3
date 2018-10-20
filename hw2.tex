@@ -36,7 +36,7 @@
 
 \section*{Collaborators}
 
-Ben Nelson and I collaborated for this assignment.
+Ben Nelson, Corbin Baldwin and I collaborated for this assignment.
 
 \begin{questions}
 
@@ -471,7 +471,17 @@ Suppose we are given as input a set of all ``allowed'' movies and their casts, a
 
 Based on the above inductive proof, we can say that Bob always wins and his strategy will be to try an choose an actor such that Alice does not have an actress to choose. If that does not work, Bob will always win when they run out of actors and actresses to choose from.
 
-\part
+\part Since $G$ does not have perfect matching, there cannot be a chain of actors and actresses who appeared together on the bipartite graph, including all nodes that starts on Alice's side and ends on Bob's side, since this would mean perfect matching. If such a chain had existed, then Alice would not be able to win as the chain would always end at Bob's end and Alice would not then have an actress to choose. Since such a chain cannot exist, there are the following remaining possibilities:
+
+\begin{enumerate}
+
+\item There exists an actress who has not appeared with any actor. If that's the case, then Alice can choose that actress and Bob will not have anybody to choose. Alice will then win.
+
+\item If the above case does not exist, then there could be a chain that ends on Alice's side and she could choose that and win.
+
+\end{enumerate}
+
+There cannot be a chain that ends at Bob's side with Alice not having any of the opportunities listed above in a case where perfect matching does not exist. So Alice always has a winning strategy.
 
 \end{parts}
 
